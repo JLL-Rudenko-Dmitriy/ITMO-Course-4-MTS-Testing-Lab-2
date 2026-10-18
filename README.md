@@ -29,4 +29,4 @@ mvn clean test
 | `GraphQlTest.rejectUnknownQueryField` | Дополнительный негативный сценарий: HTTP 200, ошибка неизвестного поля в errors, отсутствие успешных data |
 
 Задание с Postman
-![img.png](img.png)
+![postman-test.png](postman-test.png)
