@@ -6,6 +6,9 @@ target/
 out/
 bin/
 *.class
+settings.gradle
+gradlew
+gradlew.bat
 
 # Allure output from direct IDE runs
 allure-results/
@@ -29,3 +32,7 @@ allure-report/
 .DS_Store
 Thumbs.db
 Desktop.ini
+*.png
+*.jpg
+
+README.md

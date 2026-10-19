@@ -22,17 +22,30 @@ final class ApiSpecifications {
         return jsonSpec("https://graphql.postman-echo.com/graphql");
     }
 
+    static RequestSpecification authentication() {
+        return jsonSpec("https://playground.nileslabs.com/api/v1", false)
+                .header("X-Playground-Identity", UUID.randomUUID().toString());
+    }
+
     private static RequestSpecification jsonSpec(String baseUri) {
-        return new RequestSpecBuilder()
+        return jsonSpec(baseUri, true);
+    }
+
+    private static RequestSpecification jsonSpec(String baseUri, boolean logTraffic) {
+        RequestSpecBuilder builder = new RequestSpecBuilder()
                 .setBaseUri(baseUri)
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .setConfig(config()
-                        .logConfig(logConfig().enableLoggingOfRequestAndResponseIfValidationFails())
+                        .logConfig(logTraffic
+                                ? logConfig().enableLoggingOfRequestAndResponseIfValidationFails()
+                                : logConfig())
                         .httpClient(httpClientConfig()
                                 .setParam("http.connection.timeout", 10_000)
-                                .setParam("http.socket.timeout", 30_000)))
-                .addFilter(new AllureRestAssured())
-                .build();
+                                .setParam("http.socket.timeout", 30_000)));
+        if (logTraffic) {
+            builder.addFilter(new AllureRestAssured());
+        }
+        return builder.build();
     }
 }

@@ -1,0 +1,37 @@
+name: Docker tests
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: mts-labwork-3:latest
+          cache-from: type=gha,scope=mts-labwork-3
+          cache-to: type=gha,mode=max,scope=mts-labwork-3
+
+      - name: Run tests
+        env:
+          PLAYGROUND_USERNAME: ${{ secrets.PLAYGROUND_USERNAME }}
+          PLAYGROUND_PASSWORD: ${{ secrets.PLAYGROUND_PASSWORD }}
+        run: |
+          : "${PLAYGROUND_USERNAME:?Set the PLAYGROUND_USERNAME repository secret}"
+          : "${PLAYGROUND_PASSWORD:?Set the PLAYGROUND_PASSWORD repository secret}"
+          docker run --rm \
+            --env PLAYGROUND_USERNAME --env PLAYGROUND_PASSWORD mts-labwork-3:latest
