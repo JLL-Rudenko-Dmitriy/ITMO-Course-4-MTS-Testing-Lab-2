@@ -1,0 +1,15 @@
+﻿.idea
+.github
+build
+postman
+
+gradle
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+.gradle
+
+postman-test.png
+README.md
+.gitignore

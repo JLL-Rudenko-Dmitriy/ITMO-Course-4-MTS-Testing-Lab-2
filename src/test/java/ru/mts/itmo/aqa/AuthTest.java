@@ -11,10 +11,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static io.qameta.allure.Allure.step;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
@@ -26,7 +27,7 @@ class AuthTest {
     @Test
     @DisplayName("Login - Bearer token - профиль авторизованного пользователя")
     void loginAndGetCurrentUser() {
-        RequestSpecification spec = ApiSpecifications.playground();
+        RequestSpecification spec = ApiSpecifications.authentication();
 
         String token = login(spec);
         checkCurrentUser(spec, token);
@@ -41,7 +42,8 @@ class AuthTest {
     @Step("Выполнить login и извлечь access_token")
     private String login(RequestSpecification spec) {
         return given().spec(spec)
-                .body(Map.of("username", "Bret", "password", "Password@123"))
+                .body(Map.of("username", requiredEnv("PLAYGROUND_USERNAME"),
+                        "password", requiredEnv("PLAYGROUND_PASSWORD")))
         .when()
                 .post("/auth/login")
         .then()
@@ -52,18 +54,29 @@ class AuthTest {
                 .extract().path("access_token");
     }
 
-    @Step("Передать полученный Bearer token и проверить профиль")
     private void checkCurrentUser(RequestSpecification spec, String token) {
-        given().spec(spec)
-                .header("Authorization", "Bearer " + token)
-        .when()
-                .get("/auth/me")
-        .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .body("id", greaterThan(0))
-                .body("username", equalToIgnoringCase("Bret"))
-                .body("email", equalTo("sincere@april.biz"));
+        step("Передать полученный Bearer token и проверить профиль", () -> {
+            String username = given().spec(spec)
+                    .header("Authorization", "Bearer " + token)
+            .when()
+                    .get("/auth/me")
+            .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("id", greaterThan(0))
+                    .body("email", equalTo("sincere@april.biz"))
+                    .extract().path("username");
+            assertTrue(requiredEnv("PLAYGROUND_USERNAME").equalsIgnoreCase(username),
+                    "Profile username must match the configured login");
+        });
+    }
+
+    private static String requiredEnv(String name) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("Required environment variable is missing: " + name);
+        }
+        return value;
     }
 
     @Step("Проверить отказ в доступе без токена")
