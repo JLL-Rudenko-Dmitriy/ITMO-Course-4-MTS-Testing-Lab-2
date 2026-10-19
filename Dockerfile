@@ -2,7 +2,6 @@
 LABEL authors="dmrudenkovl"
 
 WORKDIR /app
-VOLUME /app/target
 
 COPY pom.xml .
 RUN mvn dependency:go-offline
