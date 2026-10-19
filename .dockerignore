@@ -1,15 +1,35 @@
-﻿.idea
-.github
-build
-postman
-
-gradle
-gradlew
+﻿# Build output and local caches
+.gradle/
+.kotlin/
+build/
+target/
+out/
+bin/
+*.class
 gradlew.bat
-build.gradle
-settings.gradle
-.gradle
+gradlew
+gradle
 
-postman-test.png
-README.md
-.gitignore
+# Allure output from direct IDE runs
+allure-results/
+allure-report/
+
+# Local IDE settings
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.github
+
+# Local environment and logs
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini

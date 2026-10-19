@@ -1,8 +1,7 @@
 name: Docker tests
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
 
 permissions:
   contents: read
@@ -23,9 +22,9 @@ jobs:
         with:
           context: .
           load: true
-          tags: mts-labwork-2:latest
-          cache-from: type=gha,scope=mts-labwork-2
-          cache-to: type=gha,mode=max,scope=mts-labwork-2
+          tags: mts-labwork-3:latest
+          cache-from: type=gha,scope=mts-labwork-3
+          cache-to: type=gha,mode=max,scope=mts-labwork-3
 
       - name: Run tests
         env:
@@ -35,4 +34,4 @@ jobs:
           : "${PLAYGROUND_USERNAME:?Set the PLAYGROUND_USERNAME repository secret}"
           : "${PLAYGROUND_PASSWORD:?Set the PLAYGROUND_PASSWORD repository secret}"
           docker run --rm \
-            --env PLAYGROUND_USERNAME --env PLAYGROUND_PASSWORD mts-labwork-2:latest
+            --env PLAYGROUND_USERNAME --env PLAYGROUND_PASSWORD mts-labwork-3:latest
